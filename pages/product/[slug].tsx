@@ -1,16 +1,31 @@
 import BaseLayout from "@/common/BaseLayout";
+import { StoreContext } from "@/utils/Context/Store";
 import data from "@/utils/data";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useContext } from "react";
 
 const ProductScreen = () => {
+  const { state, dispatch } = useContext(StoreContext);
+
   const { query } = useRouter();
   const { slug } = query;
   const product = data.products.find((x) => x.slug === slug);
   if (!product) {
     return <p className="text-md font-semibold">Product not Found</p>;
   }
+
+  const addToCartHandler = () => {
+    const existItem = state.cart.cartItems.find((x) => x.slug === product.slug);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    if (quantity > product.countInStock) {
+      alert("Sorry , Product is out of stock");
+      return;
+    }
+    dispatch({ type: "CART_ADD_ITEM", payload: { ...product, quantity } });
+  };
+
   return (
     <BaseLayout title={product.name}>
       <div className="py-2">
@@ -47,7 +62,9 @@ const ProductScreen = () => {
             <p>Status</p>
             <div>{product.countInStock > 0 ? "In stock" : "Out of Stock"}</div>
           </div>
-          <button className=" primary-button w-full">Add to Cart</button>
+          <button onClick={addToCartHandler} className=" primary-button w-full">
+            Add to Cart
+          </button>
         </div>
       </div>
     </BaseLayout>
