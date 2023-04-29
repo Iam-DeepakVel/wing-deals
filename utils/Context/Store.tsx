@@ -1,4 +1,5 @@
 import { createContext, useReducer, ReactNode } from "react";
+import Cookies from "js-cookie";
 
 interface IState {
   cart: { cartItems: any[] };
@@ -17,7 +18,9 @@ interface IContextProps {
 export const StoreContext = createContext({} as IContextProps);
 
 const initialState: IState = {
-  cart: { cartItems: [] },
+  cart: Cookies.get("cart")
+    ? JSON.parse(Cookies.get("cart")!)
+    : { cartItems: [] },
 };
 
 function reducer(state: IState, action: IAction) {
@@ -32,12 +35,16 @@ function reducer(state: IState, action: IAction) {
             item.name === existItem.name ? newItem : item
           )
         : [...state.cart.cartItems, newItem];
+      // Update the cookie for cart key
+      // Objects cant be saved in cookie , so converting to string and saving
+      Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }));
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     case "CART_REMOVE_ITEM": {
       const cartItems = state.cart.cartItems.filter(
         (item) => item.slug !== action.payload.slug
       );
+      Cookies.set("cart", JSON.stringify({ ...state.cart, cartItems }));
       return { ...state, cart: { ...state.cart, cartItems } };
     }
     default:

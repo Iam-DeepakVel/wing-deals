@@ -5,8 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 import { FiXCircle } from "react-icons/fi";
+import dynamic from "next/dynamic";
 
-export default function CartScreen() {
+function CartScreen() {
   const { state, dispatch } = useContext(StoreContext);
   const {
     cart: { cartItems },
@@ -100,3 +101,5 @@ export default function CartScreen() {
     </BaseLayout>
   );
 }
+
+export default dynamic(() => Promise.resolve(CartScreen), { ssr: false });
