@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useContext } from "react";
 import { FiXCircle } from "react-icons/fi";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 
 function CartScreen() {
   const { state, dispatch } = useContext(StoreContext);
@@ -15,6 +16,8 @@ function CartScreen() {
   const removeItemHandler = (item: Product) => {
     dispatch({ type: "CART_REMOVE_ITEM", payload: item });
   };
+
+  const router = useRouter();
 
   const updateCartHandler = (item: Product, qty: string) => {
     const quantity = Number(qty);
@@ -92,7 +95,9 @@ function CartScreen() {
                 </div>
               </li>
               <li className="primary-button rounded-md w-full">
-                <Link href="/shipping">Check Out</Link>
+                <button onClick={() => router.push("login?redirect=/shipping")}>
+                  Check Out
+                </button>
               </li>
             </ul>
           </div>
